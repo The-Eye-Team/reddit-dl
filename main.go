@@ -103,7 +103,7 @@ func fetchListing(t, name, after string) {
 			jtem := item
 
 			//
-			go mbpp.CreateJob(TrimLen(id+" - "+title, 40), func(bar2 *mbpp.BarProxy) {
+			go mbpp.CreateJob(TrimLen(id+" - "+title, 60), func(bar2 *mbpp.BarProxy) {
 				defer bar1.Increment(1)
 
 				dir2 := dir + "/" + id[:2] + "/" + id
