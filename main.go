@@ -36,7 +36,7 @@ func main() {
 	flagUser := pflag.StringArrayP("user", "u", []string{}, "")
 
 	flagSaveDir := pflag.String("save-dir", "", "")
-	flagConcurr := pflag.Int("concurrency", 100, "")
+	flagConcurr := pflag.Int("concurrency", 30, "")
 
 	pflag.Parse()
 
