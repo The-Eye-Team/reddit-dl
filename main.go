@@ -59,6 +59,7 @@ func main() {
 	for _, item := range *flagSubr {
 		fetchListing("r", item, "")
 	}
+
 	for _, item := range *flagUser {
 		fetchListing("u", item, "")
 	}
