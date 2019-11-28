@@ -57,13 +57,19 @@ func main() {
 
 	//
 
+	rb := mbpp.CreateHeadlessJob("reddit.com subreddits", int64(len(*flagSubr)), nil)
 	for _, item := range *flagSubr {
 		fetchListing("r", item, "")
+		rb.Increment(1)
 	}
+	rb.Done()
 
+	ub := mbpp.CreateHeadlessJob("reddit.com users", int64(len(*flagUser)), nil)
 	for _, item := range *flagUser {
 		fetchListing("u", item, "")
+		ub.Increment(1)
 	}
+	ub.Done()
 
 	//
 
