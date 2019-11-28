@@ -114,12 +114,12 @@ func fetchListing(t, name, after string) {
 				}
 				os.MkdirAll(dir2, os.ModePerm)
 
-				saveTextToJob(F("%s/%s/%s api_data.json", t, name, id), dir2+"/api_data.json", string(jtem.MarshalTo([]byte{})))
+				go saveTextToJob(F("%s/%s/%s api_data.json", t, name, id), dir2+"/api_data.json", string(jtem.MarshalTo([]byte{})))
 
 				//
 				st := id + "\n" + urlS + "\n" + title + "\n\n"
-				saveTextToJob(F("%s/%s/%s selftext.txt", t, name, id), dir2+"/selftext.txt", st+selftext)
-				saveTextToJob(F("%s/%s/%s selftext.html", t, name, id), dir2+"/selftext.html", selftexth)
+				go saveTextToJob(F("%s/%s/%s selftext.txt", t, name, id), dir2+"/selftext.txt", st+selftext)
+				go saveTextToJob(F("%s/%s/%s selftext.html", t, name, id), dir2+"/selftext.html", selftexth)
 
 				//
 				urlO, err := url.Parse(urlS)
