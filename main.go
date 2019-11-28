@@ -114,79 +114,78 @@ func fetchListing(t, name, after string) {
 			jtem := item
 
 			//
-			go mbpp.CreateJob(TrimLen(id+" - "+title, 60), func(bar2 *mbpp.BarProxy) {
-				defer bar1.Increment(1)
 
-				dir2 := dir + "/" + id[:2] + "/" + id
-				if util.DoesDirectoryExist(dir2) {
-					next = ""
+			dir2 := dir + "/" + id[:2] + "/" + id
+			if util.DoesDirectoryExist(dir2) {
+				next = ""
+				return
+			}
+			os.MkdirAll(dir2, os.ModePerm)
+
+			go saveTextToJob(F("%s/%s/%s api_data.json", t, name, id), dir2+"/api_data.json", string(jtem.MarshalTo([]byte{})))
+
+			//
+			st := id + "\n" + urlS + "\n" + title + "\n\n"
+			go saveTextToJob(F("%s/%s/%s selftext.txt", t, name, id), dir2+"/selftext.txt", st+selftext)
+			go saveTextToJob(F("%s/%s/%s selftext.html", t, name, id), dir2+"/selftext.html", selftexth)
+
+			//
+			urlO, err := url.Parse(urlS)
+			if err != nil {
+				//
+				fmt.Fprintln(logF, "error:", 1, t, name, id, urlS)
+
+			} else {
+				//
+				res, err := netClient.Head(urlS)
+				if err != nil {
+					fmt.Fprintln(logF, "error:", 2, t, name, id, urlS)
 					return
 				}
-				os.MkdirAll(dir2, os.ModePerm)
+				ct := res.Header.Get("content-type")
+				l := true
 
-				go saveTextToJob(F("%s/%s/%s api_data.json", t, name, id), dir2+"/api_data.json", string(jtem.MarshalTo([]byte{})))
-
-				//
-				st := id + "\n" + urlS + "\n" + title + "\n\n"
-				go saveTextToJob(F("%s/%s/%s selftext.txt", t, name, id), dir2+"/selftext.txt", st+selftext)
-				go saveTextToJob(F("%s/%s/%s selftext.html", t, name, id), dir2+"/selftext.html", selftexth)
-
-				//
-				urlO, err := url.Parse(urlS)
-				if err != nil {
-					//
-					fmt.Fprintln(logF, "error:", 1, t, name, id, urlS)
+				if urlO.Host == "old.reddit.com" {
+					l = false
+				}
+				if urlO.Host == "i.redd.it" || urlO.Host == "i.imgur.com" || (urlO.Host == "imgur.com" && !strings.Contains(ct, "text/html")) {
+					// bar2.AddToTotal(1)
+					go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+urlO.Path[1:], nil)
+					l = false
+				}
+				if urlO.Host == "imgur.com" && strings.Contains(ct, "text/html") {
+					res, _ := nRequest(http.MethodGet, urlS)
+					doc, _ := goquery.NewDocumentFromResponse(res)
+					doc.Find(".post-images .post-image-container").Each(func(_ int, el *goquery.Selection) {
+						// bar2.AddToTotal(1)
+						pid, _ := el.Attr("id")
+						ext := findExtension("https://i.imgur.com/" + pid + ".png")
+						go mbpp.CreateDownloadJob("https://i.imgur.com/"+pid+ext, dir2+"/"+urlO.Host+"_"+pid+ext, nil)
+					})
+					l = false
+				}
+				if urlO.Host == "media.giphy.com" && ct == "image/gif" {
+					pid := strings.Split(urlS, "/")[2]
+					// bar2.AddToTotal(1)
+					go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+pid+".gif", nil)
+					l = false
+				}
+				if strings.Contains(ct, "text/html") {
+					l = false
 
 				} else {
-					//
-					res, err := netClient.Head(urlS)
-					if err != nil {
-						fmt.Fprintln(logF, "error:", 2, t, name, id, urlS)
-						return
-					}
-					ct := res.Header.Get("content-type")
-					l := true
+					fn := strings.TrimPrefix(urlO.Path, filepath.Dir(urlO.Path))
+					// bar2.AddToTotal(1)
+					go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+fn, nil)
+					l = false
 
-					if urlO.Host == "old.reddit.com" {
-						l = false
-					}
-					if urlO.Host == "i.redd.it" || urlO.Host == "i.imgur.com" || (urlO.Host == "imgur.com" && !strings.Contains(ct, "text/html")) {
-						// bar2.AddToTotal(1)
-						go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+urlO.Path[1:], nil)
-						l = false
-					}
-					if urlO.Host == "imgur.com" && strings.Contains(ct, "text/html") {
-						res, _ := nRequest(http.MethodGet, urlS)
-						doc, _ := goquery.NewDocumentFromResponse(res)
-						doc.Find(".post-images .post-image-container").Each(func(_ int, el *goquery.Selection) {
-							// bar2.AddToTotal(1)
-							pid, _ := el.Attr("id")
-							ext := findExtension("https://i.imgur.com/" + pid + ".png")
-							go mbpp.CreateDownloadJob("https://i.imgur.com/"+pid+ext, dir2+"/"+urlO.Host+"_"+pid+ext, nil)
-						})
-						l = false
-					}
-					if urlO.Host == "media.giphy.com" && ct == "image/gif" {
-						pid := strings.Split(urlS, "/")[2]
-						// bar2.AddToTotal(1)
-						go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+pid+".gif", nil)
-						l = false
-					}
-					if strings.Contains(ct, "text/html") {
-						l = false
-
-					} else {
-						fn := strings.TrimPrefix(urlO.Path, filepath.Dir(urlO.Path))
-						// bar2.AddToTotal(1)
-						go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+fn, nil)
-						l = false
-
-					}
-					if l {
-						fmt.Fprintln(logF, t, name, id, urlO.Host, ct, urlS)
-					}
 				}
-			})
+				if l {
+					fmt.Fprintln(logF, t, name, id, urlO.Host, ct, urlS)
+				}
+			}
+
+			bar1.Increment(1)
 		}
 	})
 	if len(next) > 0 {
