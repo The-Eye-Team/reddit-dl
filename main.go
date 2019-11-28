@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/nektro/go-util/ansi/style"
 	"github.com/nektro/go-util/mbpp"
 	"github.com/nektro/go-util/util"
 	"github.com/spf13/pflag"
@@ -79,7 +80,10 @@ func onClose() {
 func fetchListing(t, name, after string) {
 	next := ""
 
-	mbpp.CreateJob(t+"/"+name+" +"+after, func(bar1 *mbpp.BarProxy) {
+	jobname := style.FgRed + t + style.ResetFgColor + "/"
+	jobname += style.FgCyan + name + style.ResetFgColor + " +"
+	jobname += style.FgYellow + after + style.ResetFgColor
+	mbpp.CreateJob(jobname, func(bar1 *mbpp.BarProxy) {
 		if len(after) > 0 {
 			after = "&after=" + after
 		}
