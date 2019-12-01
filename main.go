@@ -57,6 +57,7 @@ func main() {
 	util.RunOnClose(onClose)
 	log.SetOutput(logF)
 	mbpp.Init(*flagConcurr)
+	mbpp.SetBarStyle("|-ᗧ•ᗣ")
 
 	//
 
