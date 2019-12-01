@@ -18,8 +18,6 @@ import (
 	"github.com/nektro/go-util/util"
 	"github.com/spf13/pflag"
 	"github.com/valyala/fastjson"
-
-	. "github.com/nektro/go-util/alias"
 )
 
 var (
