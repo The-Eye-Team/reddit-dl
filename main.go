@@ -140,7 +140,7 @@ func fetchListing(t, name, after string) {
 			res, err := netClient.Head(urlS)
 			if err != nil {
 				fmt.Fprintln(logF, "error:", 2, t, name, id, urlS)
-				return
+				continue
 			}
 			ct := res.Header.Get("content-type")
 			l := true
