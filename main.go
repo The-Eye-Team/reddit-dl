@@ -16,6 +16,7 @@ import (
 	"github.com/nektro/go-util/ansi/style"
 	"github.com/nektro/go-util/mbpp"
 	"github.com/nektro/go-util/util"
+	dbstorage "github.com/nektro/go.dbstorage"
 	"github.com/spf13/pflag"
 	"github.com/valyala/fastjson"
 )
@@ -23,6 +24,7 @@ import (
 var (
 	DoneDir = "./data/"
 	logF    *os.File
+	db      dbstorage.Database
 )
 var (
 	netClient = &http.Client{
@@ -48,6 +50,9 @@ func main() {
 	DoneDir += "/reddit.com"
 
 	logF, _ = os.Create("./log.txt")
+
+	db = dbstorage.ConnectSqlite("./posts.db")
+	db.CreateTableStruct("posts", Post{})
 
 	util.RunOnClose(onClose)
 	log.SetOutput(logF)
