@@ -130,7 +130,7 @@ func fetchListing(t, name, after string) {
 			go saveTextToJob(F("%s/%s/%s selftext.txt", t, name, id), dir2+"/selftext.txt", st+selftext)
 			go saveTextToJob(F("%s/%s/%s selftext.html", t, name, id), dir2+"/selftext.html", selftexth)
 
-			downloadPost(urlS)
+			downloadPost(t, name, id, urlS)
 
 			bar1.Increment(1)
 		}
@@ -176,7 +176,7 @@ func Min(a, b int) int {
 	return b
 }
 
-func downloadPost(urlS string) {
+func downloadPost(t, name string, id string, urlS string) {
 	urlO, err := url.Parse(urlS)
 	if err != nil {
 		//
