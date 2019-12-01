@@ -197,7 +197,7 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 	l := true
 
 	if urlO.Host == "old.reddit.com" {
-		l = false
+		return
 	}
 	if urlO.Host == "i.redd.it" || urlO.Host == "i.imgur.com" || (urlO.Host == "imgur.com" && !strings.Contains(ct, "text/html")) {
 		links = append(links, [2]string{urlS, urlO.Host + "_" + urlO.Path[1:]})
