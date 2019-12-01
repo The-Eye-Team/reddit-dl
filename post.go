@@ -6,6 +6,6 @@ type Post struct {
 	Subreddit string `json:"subreddit" sqlite:"text"`
 	PostID    string `json:"post_id" sqlite:"text"`
 	Title     string `json:"title" sqlite:"text"`
-	Selftext  string `json:"selftext" sqlite:"text"`
+	PostJson  string `json:"json" sqlite:"text"`
 	Link      string `json:"link" sqlite:"text"`
 }
