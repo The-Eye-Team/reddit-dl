@@ -99,7 +99,6 @@ func fetchListing(t, name, after string) {
 
 		//
 		dir := DoneDir + "/" + t + "/" + name
-		os.MkdirAll(dir, os.ModePerm)
 
 		next = string(val.GetStringBytes("data", "after"))
 
@@ -121,7 +120,6 @@ func fetchListing(t, name, after string) {
 				bar1.Increment(1)
 				continue
 			}
-			os.MkdirAll(dir2, os.ModePerm)
 
 			go saveTextToJob(F("%s/%s/%s api_data.json", t, name, id), dir2+"/api_data.json", string(jtem.MarshalTo([]byte{})))
 
@@ -130,7 +128,7 @@ func fetchListing(t, name, after string) {
 			go saveTextToJob(F("%s/%s/%s selftext.txt", t, name, id), dir2+"/selftext.txt", st+selftext)
 			go saveTextToJob(F("%s/%s/%s selftext.html", t, name, id), dir2+"/selftext.html", selftexth)
 
-			downloadPost(t, name, id, urlS)
+			downloadPost(t, name, id, urlS, dir2)
 
 			bar1.Increment(1)
 		}
@@ -176,7 +174,7 @@ func Min(a, b int) int {
 	return b
 }
 
-func downloadPost(t, name string, id string, urlS string) {
+func downloadPost(t, name string, id string, urlS string, dir string) {
 	urlO, err := url.Parse(urlS)
 	if err != nil {
 		//
@@ -189,6 +187,8 @@ func downloadPost(t, name string, id string, urlS string) {
 		fmt.Fprintln(logF, "error:", 2, t, name, id, urlS)
 		return
 	}
+
+	links := [][2]string{}
 	ct := res.Header.Get("content-type")
 	l := true
 
@@ -196,7 +196,7 @@ func downloadPost(t, name string, id string, urlS string) {
 		l = false
 	}
 	if urlO.Host == "i.redd.it" || urlO.Host == "i.imgur.com" || (urlO.Host == "imgur.com" && !strings.Contains(ct, "text/html")) {
-		go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+urlO.Path[1:], nil)
+		links = append(links, [2]string{urlS, urlO.Host + "_" + urlO.Path[1:]})
 		l = false
 	}
 	if urlO.Host == "imgur.com" && strings.Contains(ct, "text/html") {
@@ -205,13 +205,13 @@ func downloadPost(t, name string, id string, urlS string) {
 		doc.Find(".post-images .post-image-container").Each(func(_ int, el *goquery.Selection) {
 			pid, _ := el.Attr("id")
 			ext := findExtension("https://i.imgur.com/" + pid + ".png")
-			go mbpp.CreateDownloadJob("https://i.imgur.com/"+pid+ext, dir2+"/"+urlO.Host+"_"+pid+ext, nil)
+			links = append(links, [2]string{"https://i.imgur.com/" + pid + ext, urlO.Host + "_" + pid + ext})
 		})
 		l = false
 	}
 	if urlO.Host == "media.giphy.com" && ct == "image/gif" {
 		pid := strings.Split(urlS, "/")[2]
-		go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+pid+".gif", nil)
+		links = append(links, [2]string{urlS, urlO.Host + "_" + pid + ".gif"})
 		l = false
 	}
 	if strings.Contains(ct, "text/html") {
@@ -219,11 +219,18 @@ func downloadPost(t, name string, id string, urlS string) {
 
 	} else {
 		fn := strings.TrimPrefix(urlO.Path, filepath.Dir(urlO.Path))
-		go mbpp.CreateDownloadJob(urlS, dir2+"/"+urlO.Host+"_"+fn, nil)
+		links = append(links, [2]string{urlS, urlO.Host + "_" + fn})
 		l = false
 
 	}
 	if l {
 		fmt.Fprintln(logF, t, name, id, urlO.Host, ct, urlS)
+	}
+	if len(links) > 0 {
+		os.MkdirAll(dir, os.ModePerm)
+
+		for _, item := range links {
+			go mbpp.CreateDownloadJob(item[0], dir+"/"+item[1], nil)
+		}
 	}
 }
