@@ -1,5 +1,9 @@
 package main
 
+import (
+	dbstorage "github.com/nektro/go.dbstorage"
+)
+
 type Post struct {
 	ID        int64 `json:"id"`
 	IDS       string
@@ -13,4 +17,8 @@ type Post struct {
 func InsertPost(sub, post, title, pjson, link string) {
 	id := db.QueryNextID("posts")
 	db.QueryPrepared(true, "insert into posts values (?, ?, ?, ?, ?, ?)", id, sub, post, title, pjson, link)
+}
+
+func DoesPostExist(post string) bool {
+	return dbstorage.QueryHasRows(db.Build().Se("*").Fr("posts").Wh("post_id", post).Exe())
 }
