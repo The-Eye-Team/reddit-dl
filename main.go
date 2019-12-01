@@ -218,12 +218,6 @@ func nRequest(method, urlS string) (*http.Response, error) {
 	return res, nil
 }
 
-func fetch(urlS string) string {
-	res, _ := nRequest(http.MethodGet, urlS)
-	bys, _ := ioutil.ReadAll(res.Body)
-	return string(bys)
-}
-
 func findExtension(urlS string) string {
 	res, _ := nRequest(http.MethodHead, urlS)
 	ext, _ := mime.ExtensionsByType(res.Header.Get("content-type"))
