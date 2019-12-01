@@ -48,10 +48,11 @@ func main() {
 	}
 	DoneDir, _ = filepath.Abs(DoneDir)
 	DoneDir += "/reddit.com"
+	os.MkdirAll(DoneDir, os.ModePerm)
 
 	logF, _ = os.Create("./log.txt")
 
-	db = dbstorage.ConnectSqlite("./posts.db")
+	db = dbstorage.ConnectSqlite(DoneDir + "/posts.db")
 	db.CreateTableStruct("posts", Post{})
 
 	util.RunOnClose(onClose)
