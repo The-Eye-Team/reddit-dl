@@ -201,15 +201,9 @@ func saveTextToJob(name, path, text string) {
 }
 
 func nRequest(method, urlS string) (*http.Response, error) {
-	req, err := http.NewRequest(method, urlS, nil)
-	if err != nil {
-		return nil, err
-	}
+	req, _ := http.NewRequest(method, urlS, nil)
 	req.Header.Add("user-agent", "github.com/nektro")
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
+	res, _ := http.DefaultClient.Do(req)
 	return res, nil
 }
 
