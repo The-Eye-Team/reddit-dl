@@ -118,7 +118,8 @@ func fetchListing(t, name, after string) {
 			dir2 := dir + "/" + id[:2] + "/" + id
 			if util.DoesDirectoryExist(dir2) {
 				next = ""
-				return
+				bar1.Increment(1)
+				continue
 			}
 			os.MkdirAll(dir2, os.ModePerm)
 
