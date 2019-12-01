@@ -111,27 +111,25 @@ func fetchListing(t, name, after string) {
 		bar1.AddToTotal(int64(len(ar)))
 		for _, item := range ar {
 			id := string(item.GetStringBytes("data", "id"))
-			title := string(item.GetStringBytes("data", "title"))
-			urlS := string(item.GetStringBytes("data", "url"))
-			selftext := string(item.GetStringBytes("data", "selftext"))
-			selftexth := string(item.GetStringBytes("data", "selftext_html"))
 			jtem := item
 
 			//
-
-			dir2 := dir + "/" + id[:2] + "/" + id
-			if util.DoesDirectoryExist(dir2) {
+			if DoesPostExist(id) {
 				next = ""
 				bar1.Increment(1)
 				continue
 			}
 
-			go saveTextToJob(F("%s/%s/%s api_data.json", t, name, id), dir2+"/api_data.json", string(jtem.MarshalTo([]byte{})))
+			title := string(item.GetStringBytes("data", "title"))
+			pjson := string(jtem.MarshalTo([]byte{}))
+			urlS := string(item.GetStringBytes("data", "url"))
+			InsertPost(sub, id, title, pjson, urlS)
 
-			//
-			st := id + "\n" + urlS + "\n" + title + "\n\n"
-			go saveTextToJob(F("%s/%s/%s selftext.txt", t, name, id), dir2+"/selftext.txt", st+selftext)
-			go saveTextToJob(F("%s/%s/%s selftext.html", t, name, id), dir2+"/selftext.html", selftexth)
+			dir2 := dir + "/" + id[:2] + "/" + id
+			if util.DoesDirectoryExist(dir2) {
+				bar1.Increment(1)
+				continue
+			}
 
 			downloadPost(t, name, id, urlS, dir2)
 
