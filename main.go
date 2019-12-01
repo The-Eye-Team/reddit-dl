@@ -101,7 +101,8 @@ func fetchListing(t, name, after string) {
 		val, _ := fastjson.Parse(string(bys))
 
 		//
-		dir := DoneDir + "/" + t + "/" + name
+		sub := t + "/" + name
+		dir := DoneDir + "/" + sub
 
 		next = string(val.GetStringBytes("data", "after"))
 
