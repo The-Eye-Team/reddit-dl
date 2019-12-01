@@ -93,7 +93,7 @@ func fetchListing(t, name, after string) {
 		if len(after) > 0 {
 			after = "&after=" + after
 		}
-		res, _ := nRequest(http.MethodGet, "https://old.reddit.com/"+t+"/"+name+"/.json?show=all"+after)
+		res, _ := fetch(http.MethodGet, "https://old.reddit.com/"+t+"/"+name+"/.json?show=all"+after)
 		bys, _ := ioutil.ReadAll(res.Body)
 		val, _ := fastjson.Parse(string(bys))
 
@@ -200,7 +200,7 @@ func saveTextToJob(name, path, text string) {
 	fmt.Fprintln(to, text)
 }
 
-func nRequest(method, urlS string) (*http.Response, error) {
+func fetch(method, urlS string) (*http.Response, error) {
 	req, _ := http.NewRequest(method, urlS, nil)
 	req.Header.Add("user-agent", "github.com/nektro")
 	res, _ := http.DefaultClient.Do(req)
@@ -208,7 +208,7 @@ func nRequest(method, urlS string) (*http.Response, error) {
 }
 
 func findExtension(urlS string) string {
-	res, _ := nRequest(http.MethodHead, urlS)
+	res, _ := fetch(http.MethodHead, urlS)
 	ext, _ := mime.ExtensionsByType(res.Header.Get("content-type"))
 	return ext[0]
 }
