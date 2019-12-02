@@ -40,7 +40,7 @@ build_template netbsd amd64
 build_template openbsd amd64
 # build_template openbsd arm
 # build_template plan9 386
-build_template plan9 amd64
+# build_template plan9 amd64
 # build_template plan9 arm
 build_template solaris amd64
 # build_template windows 386
