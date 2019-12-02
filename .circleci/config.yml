@@ -1,0 +1,17 @@
+# Golang CircleCI 2.0 configuration file
+# See https://circleci.com/docs/2.0/language-go/
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/the-eye-team/reddit-dl
+    docker:
+      - image: circleci/golang:1.12
+    steps:
+      - checkout
+      - run: go get -v -u .
+      - run: go test -v .
+      - run: ./build_all.sh
+
+      - store_artifacts:
+          path: ./bin/
+          destination: /artifacts/
