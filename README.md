@@ -15,3 +15,6 @@ $ go get -v -u github.com/The-Eye-Team/reddit-dl
 -u, --user string       The name of a user to archive. (ex. spez, PoppinKREAM, Shitty_Watercolour, etc.)
 ```
 The flags `-r` and `-u` may be passed multiple times to download many reddits at once.
+
+## License
+MIT
