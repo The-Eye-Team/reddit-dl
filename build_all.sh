@@ -6,7 +6,8 @@ build_template() {
     export GOARCH=$2
     export GOARM=7
     EXT=$3
-    TAG=$(date +'%Y.%m.%d')-$(git log --format=%h -1)
+    VERSION=$(date +'%Y.%m.%d')
+    TAG=$VERSION-$(git log --format=%h -1)
     echo $TAG-$GOOS-$GOARCH
     go build -ldflags="-s -w" -o ./bin/reddit-dl-v$TAG-$GOOS-$GOARCH$EXT
 }
