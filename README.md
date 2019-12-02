@@ -1,3 +1,3 @@
 # reddit-dl
 
-Downloader for reddit.com. Supports both subreddits and users.
+Downloader for submissions to reddit.com. Supports both subreddits and users. Currently does not grab comments.
