@@ -33,11 +33,11 @@ var (
 )
 
 func main() {
-	flagSubr := pflag.StringArrayP("subreddit", "r", []string{}, "")
-	flagUser := pflag.StringArrayP("user", "u", []string{}, "")
+	flagSubr := pflag.StringArrayP("subreddit", "r", []string{}, "The name of a subreddit to archive. (ex. AskReddit, unixporn, CasualConversation, etc.)")
+	flagUser := pflag.StringArrayP("user", "u", []string{}, "The name of a subreddit to archive. (ex. spez, PoppinKREAM, Shitty_Watercolour, etc.)")
 
-	flagSaveDir := pflag.String("save-dir", "", "")
-	flagConcurr := pflag.Int("concurrency", 30, "")
+	flagSaveDir := pflag.String("save-dir", "", "Path to a directory to save to.")
+	flagConcurr := pflag.Int("concurrency", 10, "Maximum number of simultaneous downloads.")
 
 	pflag.Parse()
 
