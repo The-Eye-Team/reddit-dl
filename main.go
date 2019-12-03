@@ -105,10 +105,6 @@ func fetchListing(loc, after string) {
 		bys, _ := ioutil.ReadAll(res.Body)
 		val, _ := fastjson.Parse(string(bys))
 
-		//
-		sub := t + "/" + name
-		dir := DoneDir + "/" + sub
-
 		next = string(val.GetStringBytes("data", "after"))
 
 		ar := val.GetArray("data", "children")
@@ -127,8 +123,10 @@ func fetchListing(loc, after string) {
 			title := string(item.GetStringBytes("data", "title"))
 			pjson := string(jtem.MarshalTo([]byte{}))
 			urlS := string(item.GetStringBytes("data", "url"))
+			sub := string(item.GetStringBytes("data", "subreddit"))
 			InsertPost(sub, id, title, pjson, urlS)
 
+			dir := DoneDir + "/r/" + sub
 			dir2 := dir + "/" + id[:2] + "/" + id
 			if util.DoesDirectoryExist(dir2) {
 				bar1.Increment(1)
