@@ -64,14 +64,14 @@ func main() {
 
 	rb := mbpp.CreateHeadlessJob("reddit.com subreddits", int64(len(*flagSubr)), nil)
 	for _, item := range *flagSubr {
-		fetchListing("r", item, "")
+		fetchListing("r/"+item, "")
 		rb.Increment(1)
 	}
 	rb.Done()
 
 	ub := mbpp.CreateHeadlessJob("reddit.com users", int64(len(*flagUser)), nil)
 	for _, item := range *flagUser {
-		fetchListing("u", item, "")
+		fetchListing("u/"+item+"/submitted", "")
 		ub.Increment(1)
 	}
 	ub.Done()
@@ -88,8 +88,11 @@ func onClose() {
 	logF.Close()
 }
 
-func fetchListing(t, name, after string) {
+func fetchListing(loc, after string) {
 	next := ""
+	s := strings.Split(loc, "/")
+	t := s[0]
+	name := s[1]
 
 	jobname := style.FgRed + t + style.ResetFgColor + "/"
 	jobname += style.FgCyan + name + style.ResetFgColor + " +"
@@ -98,7 +101,7 @@ func fetchListing(t, name, after string) {
 		if len(after) > 0 {
 			after = "&after=" + after
 		}
-		res, _ := fetch(http.MethodGet, "https://old.reddit.com/"+t+"/"+name+"/.json?show=all"+after)
+		res, _ := fetch(http.MethodGet, "https://old.reddit.com/"+loc+"/.json?show=all"+after)
 		bys, _ := ioutil.ReadAll(res.Body)
 		val, _ := fastjson.Parse(string(bys))
 
@@ -138,7 +141,7 @@ func fetchListing(t, name, after string) {
 		}
 	})
 	if len(next) > 0 {
-		fetchListing(t, name, next)
+		fetchListing(loc, next)
 	}
 }
 
