@@ -28,7 +28,7 @@ var (
 )
 var (
 	netClient = &http.Client{
-		Timeout: time.Second * 10,
+		Timeout: time.Second * 5,
 	}
 )
 
