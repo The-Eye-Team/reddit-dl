@@ -55,6 +55,8 @@ func main() {
 	db = dbstorage.ConnectSqlite(DoneDir + "/posts.db")
 	db.CreateTableStruct("posts", Post{})
 
+	//
+
 	util.RunOnClose(onClose)
 	log.SetOutput(logF)
 	mbpp.Init(*flagConcurr)
