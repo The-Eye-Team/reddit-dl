@@ -1,16 +1,16 @@
 # reddit-dl
-![loc](https://tokei.rs/b1/github.com/The-Eye-Team/reddit-dl)
+![loc](https://sloc.xyz/github/The-Eye-Team/reddit-dl)
 [![license](https://img.shields.io/github/license/The-Eye-Team/reddit-dl.svg)](https://github.com/The-Eye-Team/reddit-dl/blob/master/LICENSE)
 [![discord](https://img.shields.io/discord/302796547656253441.svg)](https://discord.gg/the-eye)
 [![circleci](https://circleci.com/gh/The-Eye-Team/reddit-dl.svg?style=svg)](https://circleci.com/gh/The-Eye-Team/reddit-dl)
+[![release](https://img.shields.io/github/v/release/The-Eye-Team/reddit-dl)](https://github.com/The-Eye-Team/reddit-dl/releases/latest)
 [![goreportcard](https://goreportcard.com/badge/github.com/The-Eye-Team/reddit-dl)](https://goreportcard.com/report/github.com/The-Eye-Team/reddit-dl)
+[![codefactor](https://www.codefactor.io/repository/github/The-Eye-Team/reddit-dl/badge)](https://www.codefactor.io/repository/github/The-Eye-Team/reddit-dl)
 
 Downloader for submissions to reddit.com. Supports both subreddits and users. Currently does not grab comments.
 
-## Installing
-```sh
-$ go get -v -u github.com/The-Eye-Team/reddit-dl
-```
+## Download
+https://github.com/The-Eye-Team/reddit-dl/releases/latest
 
 ## Usage
 ```sh
