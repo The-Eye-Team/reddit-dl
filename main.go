@@ -86,7 +86,7 @@ func main() {
 }
 
 func onClose() {
-	util.Log("Download complete after", (mbpp.GetTaskCount()), "jobs and", util.ByteCountIEC(mbpp.GetTaskDownloadSize()), "downloaded.")
+	util.Log(mbpp.GetCompletionMessage())
 	logF.Close()
 }
 
