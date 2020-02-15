@@ -134,7 +134,8 @@ func fetchListing(loc, after string) {
 			urlS := string(item.GetStringBytes("data", "url"))
 			sub := string(item.GetStringBytes("data", "subreddit"))
 			author := string(item.GetStringBytes("data", "author"))
-			InsertPost(sub, id, title, pjson, urlS, author)
+			postedAt := int64(item.GetFloat64("data", "created_utc"))
+			InsertPost(sub, id, title, pjson, urlS, author, postedAt)
 
 			dir := DoneDir + "/r/" + sub
 			dir2 := dir + "/" + id[:2] + "/" + id

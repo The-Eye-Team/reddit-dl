@@ -13,11 +13,12 @@ type Post struct {
 	PostJson  string `json:"json" sqlite:"text"`
 	Link      string `json:"link" sqlite:"text"`
 	Author    string `json:"author" sqlite:"text"`
+	Submitted int64  `json:"submitted_at" sqlite:"int"`
 }
 
-func InsertPost(sub, post, title, pjson, link, author string) {
+func InsertPost(sub, post, title, pjson, link, author string, submittedAt int64) {
 	id := db.QueryNextID("posts")
-	db.QueryPrepared(true, "insert into posts values (?, ?, ?, ?, ?, ?, ?)", id, sub, post, title, pjson, link, author)
+	db.QueryPrepared(true, "insert into posts values (?, ?, ?, ?, ?, ?, ?, ?)", id, sub, post, title, pjson, link, author, submittedAt)
 }
 
 func DoesPostExist(post string) bool {
