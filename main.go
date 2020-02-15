@@ -144,7 +144,9 @@ func fetchListing(loc, after string) {
 				continue
 			}
 
-			downloadPost(t, name, id, urlS, dir2)
+			go func() {
+				downloadPost(t, name, id, urlS, dir2)
+			}()
 
 			bar1.Increment(1)
 		}
