@@ -17,8 +17,10 @@ type Post struct {
 }
 
 func InsertPost(sub, post, title, pjson, link, author string, submittedAt int64) {
+	db.Build().Ins("posts").Lock()
 	id := db.QueryNextID("posts")
 	db.QueryPrepared(true, "insert into posts values (?, ?, ?, ?, ?, ?, ?, ?)", id, sub, post, title, pjson, link, author, submittedAt)
+	db.Build().Ins("posts").Unlock()
 }
 
 func DoesPostExist(post string) bool {
