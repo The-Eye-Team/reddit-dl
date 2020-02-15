@@ -229,6 +229,17 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 		links = append(links, [2]string{urlS, urlO.Host + "_" + pid + ".gif"})
 		l = false
 	}
+	if urlO.Host == "gfycat.com" && strings.Contains(ct, "text/html") {
+		res, _ := fetch(http.MethodGet, urlS)
+		doc, _ := goquery.NewDocumentFromResponse(res)
+		doc.Find(`script[type="application/ld+json"]`).Each(func(_ int, el *goquery.Selection) {
+			vurl := fastjson.GetString([]byte(el.Text()), "video", "contentUrl")
+			s := strings.Split(vurl, "/")
+			f := s[len(s)-1]
+			go mbpp.CreateDownloadJob(vurl, dir+"/"+f, nil)
+		})
+		l = false
+	}
 	if strings.Contains(ct, "text/html") {
 		l = false
 
