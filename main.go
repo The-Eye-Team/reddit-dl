@@ -35,6 +35,7 @@ var (
 func main() {
 	flagSubr := pflag.StringArrayP("subreddit", "r", []string{}, "The name of a subreddit to archive. (ex. AskReddit, unixporn, CasualConversation, etc.)")
 	flagUser := pflag.StringArrayP("user", "u", []string{}, "The name of a subreddit to archive. (ex. spez, PoppinKREAM, Shitty_Watercolour, etc.)")
+	flagDomn := pflag.StringArrayP("domain", "d", []string{}, "The host of a domain to archive.")
 
 	flagSaveDir := pflag.String("save-dir", "", "Path to a directory to save to.")
 	flagConcurr := pflag.Int("concurrency", 10, "Maximum number of simultaneous downloads.")
@@ -77,6 +78,13 @@ func main() {
 		ub.Increment(1)
 	}
 	ub.Done()
+
+	mb := mbpp.CreateHeadlessJob("reddit.com domains", int64(len(*flagUser)), nil)
+	for _, item := range *flagDomn {
+		fetchListing("domain/"+item, "")
+		mb.Increment(1)
+	}
+	mb.Done()
 
 	//
 
