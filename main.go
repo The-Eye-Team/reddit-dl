@@ -64,26 +64,29 @@ func main() {
 
 	//
 
-	rb := mbpp.CreateHeadlessJob("reddit.com subreddits", int64(len(*flagSubr)), nil)
-	for _, item := range *flagSubr {
-		fetchListing("r/"+item, "")
-		rb.Increment(1)
-	}
-	rb.Done()
+	mbpp.CreateJob("reddit.com subreddits", func(bar *mbpp.BarProxy) {
+		bar.AddToTotal(int64(len(*flagSubr)))
+		for _, item := range *flagSubr {
+			fetchListing("r/"+item, "")
+			bar.Increment(1)
+		}
+	})
 
-	ub := mbpp.CreateHeadlessJob("reddit.com users", int64(len(*flagUser)), nil)
-	for _, item := range *flagUser {
-		fetchListing("u/"+item+"/submitted", "")
-		ub.Increment(1)
-	}
-	ub.Done()
+	mbpp.CreateJob("reddit.com users", func(bar *mbpp.BarProxy) {
+		bar.AddToTotal(int64(len(*flagUser)))
+		for _, item := range *flagUser {
+			fetchListing("u/"+item, "/submitted")
+			bar.Increment(1)
+		}
+	})
 
-	mb := mbpp.CreateHeadlessJob("reddit.com domains", int64(len(*flagUser)), nil)
-	for _, item := range *flagDomn {
-		fetchListing("domain/"+item, "")
-		mb.Increment(1)
-	}
-	mb.Done()
+	mbpp.CreateJob("reddit.com domains", func(bar *mbpp.BarProxy) {
+		bar.AddToTotal(int64(len(*flagDomn)))
+		for _, item := range *flagDomn {
+			fetchListing("domain/"+item, "")
+			bar.Increment(1)
+		}
+	})
 
 	//
 
