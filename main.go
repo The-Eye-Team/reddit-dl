@@ -163,17 +163,6 @@ func findExtension(urlS string) string {
 	return ext[0]
 }
 
-func TrimLen(s string, max int) string {
-	return s[:Min(len(s), max)]
-}
-
-func Min(a, b int) int {
-	if a <= b {
-		return a
-	}
-	return b
-}
-
 func downloadPost(t, name string, id string, urlS string, dir string) {
 	urlO, err := url.Parse(urlS)
 	if err != nil {
