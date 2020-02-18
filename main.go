@@ -24,7 +24,7 @@ import (
 var (
 	DoneDir = "./data/"
 	logF    *os.File
-	db      dbstorage.Database
+	dbP     dbstorage.Database
 )
 var (
 	netClient = &http.Client{
@@ -53,8 +53,8 @@ func main() {
 
 	logF, _ = os.Create(DoneDir + "/log.txt")
 
-	db = dbstorage.ConnectSqlite(DoneDir + "/posts.db")
-	db.CreateTableStruct("posts", tPost{})
+	dbP = dbstorage.ConnectSqlite(DoneDir + "/posts.db")
+	dbP.CreateTableStruct("posts", tPost{})
 
 	//
 

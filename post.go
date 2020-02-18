@@ -19,14 +19,14 @@ type tPost struct {
 }
 
 func insertPost(sub, post, title, pjson, link, author string, submittedAt int64) {
-	db.Build().Ins("posts").Lock()
-	id := db.QueryNextID("posts")
-	db.QueryPrepared(true, "insert into posts values (?, ?, ?, ?, ?, ?, ?, ?)", id, sub, post, title, pjson, link, author, submittedAt)
-	db.Build().Ins("posts").Unlock()
+	dbP.Build().Ins("posts").Lock()
+	id := dbP.QueryNextID("posts")
+	dbP.QueryPrepared(true, "insert into posts values (?, ?, ?, ?, ?, ?, ?, ?)", id, sub, post, title, pjson, link, author, submittedAt)
+	dbP.Build().Ins("posts").Unlock()
 }
 
 func doesPostExist(post string) bool {
-	return dbstorage.QueryHasRows(db.Build().Se("*").Fr("posts").Wh("post_id", post).Exe())
+	return dbstorage.QueryHasRows(dbP.Build().Se("*").Fr("posts").Wh("post_id", post).Exe())
 }
 
 func postListingCb(t, name string, item *fastjson.Value) (bool, bool) {
