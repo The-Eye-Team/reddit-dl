@@ -209,8 +209,7 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 			go mbpp.CreateDownloadJob(vurl, dir+"/"+f, nil)
 		})
 	}
-	if strings.Contains(ct, "text/html") {
-	} else {
+	if !strings.Contains(ct, "text/html") {
 		fn := strings.TrimPrefix(urlO.Path, filepath.Dir(urlO.Path))
 		links = append(links, [2]string{urlS, urlO.Host + "_" + fn})
 
