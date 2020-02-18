@@ -179,14 +179,12 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 
 	links := [][2]string{}
 	ct := res.Header.Get("content-type")
-	l := true
 
 	if urlO.Host == "old.reddit.com" {
 		return
 	}
 	if urlO.Host == "i.redd.it" || urlO.Host == "i.imgur.com" || (urlO.Host == "imgur.com" && !strings.Contains(ct, "text/html")) {
 		links = append(links, [2]string{urlS, urlO.Host + "_" + urlO.Path[1:]})
-		l = false
 	}
 	if urlO.Host == "imgur.com" && strings.Contains(ct, "text/html") {
 		res, _ := fetch(http.MethodGet, urlS)
@@ -196,12 +194,10 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 			ext := findExtension("https://i.imgur.com/" + pid + ".png")
 			links = append(links, [2]string{"https://i.imgur.com/" + pid + ext, urlO.Host + "_" + pid + ext})
 		})
-		l = false
 	}
 	if urlO.Host == "media.giphy.com" && ct == "image/gif" {
 		pid := strings.Split(urlS, "/")[2]
 		links = append(links, [2]string{urlS, urlO.Host + "_" + pid + ".gif"})
-		l = false
 	}
 	if urlO.Host == "gfycat.com" && strings.Contains(ct, "text/html") {
 		res, _ := fetch(http.MethodGet, urlS)
@@ -212,19 +208,12 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 			f := s[len(s)-1]
 			go mbpp.CreateDownloadJob(vurl, dir+"/"+f, nil)
 		})
-		l = false
 	}
 	if strings.Contains(ct, "text/html") {
-		l = false
-
 	} else {
 		fn := strings.TrimPrefix(urlO.Path, filepath.Dir(urlO.Path))
 		links = append(links, [2]string{urlS, urlO.Host + "_" + fn})
-		l = false
 
-	}
-	if l {
-		fmt.Fprintln(logF, t, name, id, urlO.Host, ct, urlS)
 	}
 	if len(links) > 0 {
 		os.MkdirAll(dir, os.ModePerm)
