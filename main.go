@@ -67,7 +67,7 @@ func main() {
 	mbpp.CreateJob("reddit.com subreddits", func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(int64(len(*flagSubr)))
 		for _, item := range *flagSubr {
-			fetchListing("r/"+item, "")
+			fetchListing("r/"+item, "", postListingCb)
 			bar.Increment(1)
 		}
 	})
@@ -75,7 +75,7 @@ func main() {
 	mbpp.CreateJob("reddit.com users", func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(int64(len(*flagUser)))
 		for _, item := range *flagUser {
-			fetchListing("u/"+item, "/submitted")
+			fetchListing("u/"+item, "/submitted", postListingCb)
 			bar.Increment(1)
 		}
 	})
@@ -83,7 +83,7 @@ func main() {
 	mbpp.CreateJob("reddit.com domains", func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(int64(len(*flagDomn)))
 		for _, item := range *flagDomn {
-			fetchListing("domain/"+item, "")
+			fetchListing("domain/"+item, "", postListingCb)
 			bar.Increment(1)
 		}
 	})
@@ -100,7 +100,7 @@ func onClose() {
 	logF.Close()
 }
 
-func fetchListing(loc, after string) {
+func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bool, bool)) {
 	next := ""
 	s := strings.Split(loc, "/")
 	t := s[0]
@@ -122,38 +122,19 @@ func fetchListing(loc, after string) {
 		ar := val.GetArray("data", "children")
 		bar1.AddToTotal(int64(len(ar)))
 		for _, item := range ar {
-			id := string(item.GetStringBytes("data", "id"))
-			jtem := item
 
-			//
-			if DoesPostExist(id) {
-				next = ""
-				bar1.Increment(1)
-				continue
-			}
-
-			title := string(item.GetStringBytes("data", "title"))
-			pjson := string(jtem.MarshalTo([]byte{}))
-			urlS := string(item.GetStringBytes("data", "url"))
-			sub := string(item.GetStringBytes("data", "subreddit"))
-			author := string(item.GetStringBytes("data", "author"))
-			postedAt := int64(item.GetFloat64("data", "created_utc"))
-			InsertPost(sub, id, title, pjson, urlS, author, postedAt)
-
-			dir := DoneDir + "/r/" + sub
-			dir2 := dir + "/" + id[:2] + "/" + id
-			if util.DoesDirectoryExist(dir2) {
-				bar1.Increment(1)
-				continue
-			}
-
-			go downloadPost(t, name, id, urlS, dir2)
-
+			end, skip := f(t, name, item)
 			bar1.Increment(1)
+			if end {
+				next = ""
+			}
+			if skip {
+				continue
+			}
 		}
 	})
 	if len(next) > 0 {
-		fetchListing(loc, next)
+		fetchListing(loc, next, f)
 	}
 }
 

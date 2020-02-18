@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/nektro/go-util/util"
 	dbstorage "github.com/nektro/go.dbstorage"
+	"github.com/valyala/fastjson"
 )
 
 type Post struct {
@@ -25,4 +27,31 @@ func InsertPost(sub, post, title, pjson, link, author string, submittedAt int64)
 
 func DoesPostExist(post string) bool {
 	return dbstorage.QueryHasRows(db.Build().Se("*").Fr("posts").Wh("post_id", post).Exe())
+}
+
+func postListingCb(t, name string, item *fastjson.Value) (bool, bool) {
+	id := string(item.GetStringBytes("data", "id"))
+
+	//
+	if DoesPostExist(id) {
+		return true, true
+	}
+
+	title := string(item.GetStringBytes("data", "title"))
+	pjson := string(item.MarshalTo([]byte{}))
+	urlS := string(item.GetStringBytes("data", "url"))
+	sub := string(item.GetStringBytes("data", "subreddit"))
+	author := string(item.GetStringBytes("data", "author"))
+	postedAt := int64(item.GetFloat64("data", "created_utc"))
+	InsertPost(sub, id, title, pjson, urlS, author, postedAt)
+
+	dir := DoneDir + "/r/" + sub
+	dir2 := dir + "/" + id[:2] + "/" + id
+	if util.DoesDirectoryExist(dir2) {
+		return false, true
+	}
+
+	go downloadPost(t, name, id, urlS, dir2)
+
+	return false, false
 }
