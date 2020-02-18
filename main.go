@@ -54,7 +54,7 @@ func main() {
 	logF, _ = os.Create(DoneDir + "/log.txt")
 
 	db = dbstorage.ConnectSqlite(DoneDir + "/posts.db")
-	db.CreateTableStruct("posts", Post{})
+	db.CreateTableStruct("posts", tPost{})
 
 	//
 

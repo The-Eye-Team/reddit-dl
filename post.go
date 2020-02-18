@@ -6,7 +6,7 @@ import (
 	"github.com/valyala/fastjson"
 )
 
-type Post struct {
+type tPost struct {
 	ID        int64 `json:"id"`
 	IDS       string
 	Subreddit string `json:"subreddit" sqlite:"text"`
@@ -18,14 +18,14 @@ type Post struct {
 	Submitted int64  `json:"submitted_at" sqlite:"int"`
 }
 
-func InsertPost(sub, post, title, pjson, link, author string, submittedAt int64) {
+func insertPost(sub, post, title, pjson, link, author string, submittedAt int64) {
 	db.Build().Ins("posts").Lock()
 	id := db.QueryNextID("posts")
 	db.QueryPrepared(true, "insert into posts values (?, ?, ?, ?, ?, ?, ?, ?)", id, sub, post, title, pjson, link, author, submittedAt)
 	db.Build().Ins("posts").Unlock()
 }
 
-func DoesPostExist(post string) bool {
+func doesPostExist(post string) bool {
 	return dbstorage.QueryHasRows(db.Build().Se("*").Fr("posts").Wh("post_id", post).Exe())
 }
 
@@ -33,7 +33,7 @@ func postListingCb(t, name string, item *fastjson.Value) (bool, bool) {
 	id := string(item.GetStringBytes("data", "id"))
 
 	//
-	if DoesPostExist(id) {
+	if doesPostExist(id) {
 		return true, true
 	}
 
@@ -43,7 +43,7 @@ func postListingCb(t, name string, item *fastjson.Value) (bool, bool) {
 	sub := string(item.GetStringBytes("data", "subreddit"))
 	author := string(item.GetStringBytes("data", "author"))
 	postedAt := int64(item.GetFloat64("data", "created_utc"))
-	InsertPost(sub, id, title, pjson, urlS, author, postedAt)
+	insertPost(sub, id, title, pjson, urlS, author, postedAt)
 
 	dir := DoneDir + "/r/" + sub
 	dir2 := dir + "/" + id[:2] + "/" + id
