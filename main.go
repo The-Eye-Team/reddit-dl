@@ -25,6 +25,7 @@ var (
 	DoneDir = "./data/"
 	logF    *os.File
 	dbP     dbstorage.Database
+	dbC     dbstorage.Database
 )
 var (
 	netClient = &http.Client{
@@ -56,6 +57,9 @@ func main() {
 	dbP = dbstorage.ConnectSqlite(DoneDir + "/posts.db")
 	dbP.CreateTableStruct("posts", tPost{})
 
+	dbC = dbstorage.ConnectSqlite(DoneDir + "/comments.db")
+	dbC.CreateTableStruct("comments", tComment{})
+
 	//
 
 	util.RunOnClose(onClose)
@@ -68,6 +72,7 @@ func main() {
 		bar.AddToTotal(int64(len(*flagSubr)))
 		for _, item := range *flagSubr {
 			fetchListing("r/"+item, "", postListingCb)
+			fetchListing("r/"+item+"/comments", "", commentListingCb)
 			bar.Increment(1)
 		}
 	})
@@ -76,6 +81,7 @@ func main() {
 		bar.AddToTotal(int64(len(*flagUser)))
 		for _, item := range *flagUser {
 			fetchListing("u/"+item+"/submitted", "", postListingCb)
+			fetchListing("u/"+item+"/comments", "", commentListingCb)
 			bar.Increment(1)
 		}
 	})
@@ -84,6 +90,7 @@ func main() {
 		bar.AddToTotal(int64(len(*flagDomn)))
 		for _, item := range *flagDomn {
 			fetchListing("domain/"+item, "", postListingCb)
+			fetchListing("domain/"+item+"/comments", "", commentListingCb)
 			bar.Increment(1)
 		}
 	})
