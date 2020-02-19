@@ -148,18 +148,6 @@ func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bo
 	wg.Done()
 }
 
-func saveTextToJob(name, path, text string) {
-	if util.DoesFileExist(path) {
-		return
-	}
-	to, err := os.Create(path)
-	if err != nil {
-		return
-	}
-	defer to.Close()
-	fmt.Fprintln(to, text)
-}
-
 func fetch(method, urlS string) (*http.Response, error) {
 	req, _ := http.NewRequest(method, urlS, nil)
 	req.Header.Add("user-agent", "linux:eu.the-eye.reddit-dl:v1.0.0 (by /u/nektro)")
@@ -180,7 +168,6 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 
 	urlO, err := url.Parse(urlS)
 	if err != nil {
-		//
 		return
 	}
 
