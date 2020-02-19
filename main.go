@@ -27,6 +27,7 @@ var (
 	dbP     dbstorage.Database
 	dbC     dbstorage.Database
 	doComms bool
+	noPics  bool
 )
 var (
 	netClient = &http.Client{
@@ -42,6 +43,7 @@ func main() {
 	flagSaveDir := pflag.String("save-dir", "", "Path to a directory to save to.")
 	flagConcurr := pflag.Int("concurrency", 10, "Maximum number of simultaneous downloads.")
 	pflag.BoolVar(&doComms, "do-comments", false, "Enable this flag to save post comments.")
+	pflag.BoolVar(&noPics, "no-pics", false, "Enable this flag to disable the saving of post attachments.")
 
 	pflag.Parse()
 
@@ -173,6 +175,10 @@ func findExtension(urlS string) string {
 }
 
 func downloadPost(t, name string, id string, urlS string, dir string) {
+	if noPics {
+		return
+	}
+
 	urlO, err := url.Parse(urlS)
 	if err != nil {
 		//

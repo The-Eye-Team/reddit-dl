@@ -18,6 +18,7 @@ https://github.com/The-Eye-Team/reddit-dl/releases/latest
     --concurrency int   Maximum number of simultaneous downloads. (default 10)
 -d, --domain string     The host of a domain to archive.
     --mbpp-bar-gradient Enabling this will make the bar gradient from red/yellow/green.
+    --no-pics           Enable this flag to disable the saving of post attachments.
     --save-dir string   Path to a directory to save to.
 -r, --subreddit string  The name of a subreddit to archive. (ex. AskReddit, unixporn, CasualConversation, etc.)
 -u, --user string       The name of a user to archive. (ex. spez, PoppinKREAM, Shitty_Watercolour, etc.)
