@@ -173,7 +173,7 @@ func saveTextToJob(name, path, text string) {
 
 func fetch(method, urlS string) (*http.Response, error) {
 	req, _ := http.NewRequest(method, urlS, nil)
-	req.Header.Add("user-agent", "the-eye-team/reddit-dl")
+	req.Header.Add("user-agent", "linux:eu.the-eye.reddit-dl:v1.0.0 (by /u/nektro)")
 	res, _ := http.DefaultClient.Do(req)
 	return res, nil
 }
