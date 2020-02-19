@@ -16,6 +16,7 @@ https://github.com/The-Eye-Team/reddit-dl/releases/latest
 ```sh
     --do-comments       Enable this flag to save post comments.
     --concurrency int   Maximum number of simultaneous downloads. (default 10)
+    --mbpp-bar-gradient Enabling this will make the bar gradient from red/yellow/green.
     --save-dir string   Path to a directory to save to.
 -r, --subreddit string  The name of a subreddit to archive. (ex. AskReddit, unixporn, CasualConversation, etc.)
 -u, --user string       The name of a user to archive. (ex. spez, PoppinKREAM, Shitty_Watercolour, etc.)
