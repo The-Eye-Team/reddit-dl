@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"mime"
 	"net/http"
 	"net/url"
@@ -24,7 +23,6 @@ import (
 
 var (
 	DoneDir = "./data/"
-	logF    *os.File
 	dbP     dbstorage.Database
 	dbC     dbstorage.Database
 	doComms bool
@@ -62,8 +60,6 @@ func main() {
 	}
 	os.MkdirAll(DoneDir, os.ModePerm)
 
-	logF, _ = os.Create(DoneDir + "/log.txt")
-
 	dbP = dbstorage.ConnectSqlite(DoneDir + "/posts.db")
 	dbP.CreateTableStruct("posts", tPost{})
 
@@ -73,7 +69,6 @@ func main() {
 	//
 
 	util.RunOnClose(onClose)
-	log.SetOutput(logF)
 	mbpp.Init(*flagConcurr)
 
 	//
@@ -112,7 +107,6 @@ func main() {
 
 func onClose() {
 	util.Log(mbpp.GetCompletionMessage())
-	logF.Close()
 }
 
 func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bool, bool)) {
@@ -187,13 +181,11 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 	urlO, err := url.Parse(urlS)
 	if err != nil {
 		//
-		fmt.Fprintln(logF, "error:", 1, t, name, id, urlS)
 		return
 	}
 
 	res, err := netClient.Head(urlS)
 	if err != nil {
-		fmt.Fprintln(logF, "error:", 2, t, name, id, urlS)
 		return
 	}
 
