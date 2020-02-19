@@ -34,7 +34,7 @@ var (
 
 func main() {
 	flagSubr := pflag.StringArrayP("subreddit", "r", []string{}, "The name of a subreddit to archive. (ex. AskReddit, unixporn, CasualConversation, etc.)")
-	flagUser := pflag.StringArrayP("user", "u", []string{}, "The name of a subreddit to archive. (ex. spez, PoppinKREAM, Shitty_Watercolour, etc.)")
+	flagUser := pflag.StringArrayP("user", "u", []string{}, "The name of a user to archive. (ex. spez, PoppinKREAM, Shitty_Watercolour, etc.)")
 	flagDomn := pflag.StringArrayP("domain", "d", []string{}, "The host of a domain to archive.")
 
 	flagSaveDir := pflag.String("save-dir", "", "Path to a directory to save to.")
