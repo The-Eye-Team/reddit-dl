@@ -28,6 +28,7 @@ var (
 	dbC     dbstorage.Database
 	doComms bool
 	noPics  bool
+	noDmDir bool
 )
 var (
 	netClient = &http.Client{
@@ -44,6 +45,7 @@ func main() {
 	flagConcurr := pflag.Int("concurrency", 10, "Maximum number of simultaneous downloads.")
 	pflag.BoolVar(&doComms, "do-comments", false, "Enable this flag to save post comments.")
 	pflag.BoolVar(&noPics, "no-pics", false, "Enable this flag to disable the saving of post attachments.")
+	pflag.BoolVar(&noDmDir, "no-domain-dir", false, "Enable this flag to disable adding 'reddit.com' to --save-dir.")
 
 	pflag.Parse()
 
@@ -53,7 +55,9 @@ func main() {
 		DoneDir = *flagSaveDir
 	}
 	DoneDir, _ = filepath.Abs(DoneDir)
-	DoneDir += "/reddit.com"
+	if !noDmDir {
+		DoneDir += "/reddit.com"
+	}
 	os.MkdirAll(DoneDir, os.ModePerm)
 
 	logF, _ = os.Create(DoneDir + "/log.txt")
