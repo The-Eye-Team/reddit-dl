@@ -14,6 +14,7 @@ https://github.com/The-Eye-Team/reddit-dl/releases/latest
 
 ## Usage
 ```sh
+    --do-comments       Enable this flag to save post comments.
     --concurrency int   Maximum number of simultaneous downloads. (default 10)
     --save-dir string   Path to a directory to save to.
 -r, --subreddit string  The name of a subreddit to archive. (ex. AskReddit, unixporn, CasualConversation, etc.)

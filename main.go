@@ -26,6 +26,7 @@ var (
 	logF    *os.File
 	dbP     dbstorage.Database
 	dbC     dbstorage.Database
+	doComms bool
 )
 var (
 	netClient = &http.Client{
@@ -40,6 +41,7 @@ func main() {
 
 	flagSaveDir := pflag.String("save-dir", "", "Path to a directory to save to.")
 	flagConcurr := pflag.Int("concurrency", 10, "Maximum number of simultaneous downloads.")
+	pflag.BoolVar(&doComms, "do-comments", false, "Enable this flag to save post comments.")
 
 	pflag.Parse()
 
@@ -219,7 +221,6 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 	if !strings.Contains(ct, "text/html") {
 		fn := strings.TrimPrefix(urlO.Path, filepath.Dir(urlO.Path))
 		links = append(links, [2]string{urlS, urlO.Host + "_" + fn})
-
 	}
 	if len(links) > 0 {
 		os.MkdirAll(dir, os.ModePerm)
