@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -29,6 +30,7 @@ var (
 	doComms bool
 	noPics  bool
 	noDmDir bool
+	wg      = new(sync.WaitGroup)
 )
 var (
 	netClient = &http.Client{
@@ -79,8 +81,9 @@ func main() {
 	mbpp.CreateJob("reddit.com subreddits", func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(int64(len(*flagSubr)))
 		for _, item := range *flagSubr {
-			fetchListing("r/"+item, "", postListingCb)
-			fetchListing("r/"+item+"/comments", "", commentListingCb)
+			go fetchListing("r/"+item, "", postListingCb)
+			go fetchListing("r/"+item+"/comments", "", commentListingCb)
+			wg.Wait()
 			bar.Increment(1)
 		}
 	})
@@ -88,8 +91,9 @@ func main() {
 	mbpp.CreateJob("reddit.com users", func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(int64(len(*flagUser)))
 		for _, item := range *flagUser {
-			fetchListing("u/"+item+"/submitted", "", postListingCb)
-			fetchListing("u/"+item+"/comments", "", commentListingCb)
+			go fetchListing("u/"+item+"/submitted", "", postListingCb)
+			go fetchListing("u/"+item+"/comments", "", commentListingCb)
+			wg.Wait()
 			bar.Increment(1)
 		}
 	})
@@ -97,8 +101,9 @@ func main() {
 	mbpp.CreateJob("reddit.com domains", func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(int64(len(*flagDomn)))
 		for _, item := range *flagDomn {
-			fetchListing("domain/"+item, "", postListingCb)
-			fetchListing("domain/"+item+"/comments", "", commentListingCb)
+			go fetchListing("domain/"+item, "", postListingCb)
+			go fetchListing("domain/"+item+"/comments", "", commentListingCb)
+			wg.Wait()
 			bar.Increment(1)
 		}
 	})
@@ -116,6 +121,7 @@ func onClose() {
 }
 
 func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bool, bool)) {
+	wg.Add(1)
 	next := ""
 	s := strings.Split(loc, "/")
 	t := s[0]
@@ -137,7 +143,6 @@ func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bo
 		ar := val.GetArray("data", "children")
 		bar1.AddToTotal(int64(len(ar)))
 		for _, item := range ar {
-
 			end, skip := f(t, name, item)
 			bar1.Increment(1)
 			if end {
@@ -151,6 +156,7 @@ func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bo
 	if len(next) > 0 {
 		fetchListing(loc, next, f)
 	}
+	wg.Done()
 }
 
 func saveTextToJob(name, path, text string) {
