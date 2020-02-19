@@ -75,7 +75,7 @@ func main() {
 	mbpp.CreateJob("reddit.com users", func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(int64(len(*flagUser)))
 		for _, item := range *flagUser {
-			fetchListing("u/"+item, "/submitted", postListingCb)
+			fetchListing("u/"+item+"/submitted", "", postListingCb)
 			bar.Increment(1)
 		}
 	})
