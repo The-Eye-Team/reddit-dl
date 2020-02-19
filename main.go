@@ -92,31 +92,12 @@ func main() {
 
 	//
 
-	mbpp.CreateJob("reddit.com subreddits", func(bar *mbpp.BarProxy) {
-		bar.AddToTotal(int64(len(*flagSubr)))
-		for _, item := range *flagSubr {
-			go fetchListing("r/"+item, "", postListingCb)
-			go fetchListing("r/"+item+"/comments", "", commentListingCb)
-			wg.Wait()
-			bar.Increment(1)
-		}
-	})
-
-	mbpp.CreateJob("reddit.com users", func(bar *mbpp.BarProxy) {
-		bar.AddToTotal(int64(len(*flagUser)))
-		for _, item := range *flagUser {
-			go fetchListing("u/"+item+"/submitted", "", postListingCb)
-			go fetchListing("u/"+item+"/comments", "", commentListingCb)
-			wg.Wait()
-			bar.Increment(1)
-		}
-	})
-
-	mbpp.CreateJob("reddit.com domains", func(bar *mbpp.BarProxy) {
-		bar.AddToTotal(int64(len(*flagDomn)))
-		for _, item := range *flagDomn {
-			go fetchListing("domain/"+item, "", postListingCb)
-			go fetchListing("domain/"+item+"/comments", "", commentListingCb)
+	mbpp.CreateJob("reddit.com", func(bar *mbpp.BarProxy) {
+		bar.AddToTotal(int64(len(items)))
+		for _, item := range items {
+			wg.Add(2)
+			go fetchListing(fmt.Sprintf(item[0], item[1]), "", postListingCb)
+			go fetchListing(fmt.Sprintf(item[0], item[1])+"/comments", "", commentListingCb)
 			wg.Wait()
 			bar.Increment(1)
 		}
@@ -135,7 +116,6 @@ func onClose() {
 }
 
 func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bool, bool)) {
-	wg.Add(1)
 	next := ""
 	s := strings.Split(loc, "/")
 	t := s[0]
@@ -168,6 +148,7 @@ func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bo
 		}
 	})
 	if len(next) > 0 {
+		wg.Add(1)
 		fetchListing(loc, next, f)
 	}
 	wg.Done()
