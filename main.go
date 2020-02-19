@@ -78,6 +78,20 @@ func main() {
 
 	//
 
+	items := [][2]string{}
+
+	for _, item := range *flagSubr {
+		items = append(items, [2]string{"r/%s", item})
+	}
+	for _, item := range *flagUser {
+		items = append(items, [2]string{"u/%s/submitted", item})
+	}
+	for _, item := range *flagDomn {
+		items = append(items, [2]string{"domain/%s", item})
+	}
+
+	//
+
 	mbpp.CreateJob("reddit.com subreddits", func(bar *mbpp.BarProxy) {
 		bar.AddToTotal(int64(len(*flagSubr)))
 		for _, item := range *flagSubr {
