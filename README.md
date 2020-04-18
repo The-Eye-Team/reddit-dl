@@ -7,7 +7,7 @@
 [![goreportcard](https://goreportcard.com/badge/github.com/The-Eye-Team/reddit-dl)](https://goreportcard.com/report/github.com/The-Eye-Team/reddit-dl)
 [![codefactor](https://www.codefactor.io/repository/github/The-Eye-Team/reddit-dl/badge)](https://www.codefactor.io/repository/github/The-Eye-Team/reddit-dl)
 
-Downloader for submissions to reddit.com. Supports both subreddits and users. Currently does not grab comments.
+Downloader for submissions to reddit.com. Supports both subreddits and users.
 
 ## Download
 https://github.com/The-Eye-Team/reddit-dl/releases/latest
